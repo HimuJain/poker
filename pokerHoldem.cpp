@@ -1,23 +1,27 @@
 #include <iostream>
 #include <cstdlib>
 #include <unistd.h>
+#include "card.h"
+#include "player.h"
+#include "deck.h"
 using namespace std;
 
-void shuffleCards(int deck[]);
-int deal(int deck[], int playHands[][5], int numPlay, int deckTop, int round);
-int communityDeal(int deck[], int communityCards[], int deckTop, int round);
+
+void deal(int numPlayers, int numCards);
+// int deal(int deck[], int playHands[][2], int numPlay, int deckTop);
+// int communityDeal(int deck[], int communityCards[], int deckTop, int round);
 
 // ♥, ♠, ♦, ♣; each suit as a unicode character
-const char *suit[4] = {"\U00002665", "\U00002660", "\U00002666", "\U00002663"};
+const char* suit[4] = {"\U00002665", "\U00002660", "\U00002666", "\U00002663"};
 // the card type for each card
-const char *type[13] = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
+const char* type[13] = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
 
 
 // literally just shuffling cards
 void shuffleCards(int deck[])
 {
     // using a shuffle algorithm
-    for (int i = 52 - 1; i > 0; i--)
+    for (int i = 52 - 1; i >= 0; i--)
     {
         int j = rand() % (i + 1);
         int swap = deck[i];
@@ -27,15 +31,15 @@ void shuffleCards(int deck[])
 }
 
 // dealing for players
-int deal(int deck[], int playHands[][5], int numPlay, int deckTop, int round)
+int deal(int deck[], int playHands[][2], int numPlay, int deckTop)
 {
     // decrement round to use for array indicies
-    round--;
     for (int i = 0; i < numPlay; i++)
     {
-        // assign the present top of the deck to player #i's hand (depending on which round it is)
-        playHands[i][round] = deck[deckTop];
-        deckTop++;
+        // assign the present top 2 cards of the deck to player #i's hand
+        playHands[i][0] = deck[deckTop];
+        playHands[i][1] = deck[deckTop];
+        deckTop += 2;
     }
     return deckTop;
 }
@@ -45,9 +49,10 @@ int communityDeal(int deck[], int communityCards[], int deckTop, int round)
 {
     round--;
     communityCards[round] = deck[deckTop];
-    return deckTop + 1;
+    return ++deckTop;
 }
 
+// prints out the cards in a hand
 void printCards(int hand[], int round){
     round;
     for(int i = 0; i < round; i++){
@@ -57,21 +62,23 @@ void printCards(int hand[], int round){
 }
 
 
+
+
 int main()
 {
     // welcome messages
     cout << "Welcome to Poker!" << endl;
-    cout << "How many players would you like? (2-4)" << endl; // not including player
+    cout << "How many players would you like? (2-5)" << endl; // not including player
     int numPlay;
     cin >> numPlay;
-    while (numPlay < 2 || numPlay > 4)
+    while (numPlay < 2 || numPlay > 5)
     {
-        cout << "Please enter a number between 2 and 4." << endl;
+        cout << "Please enter a number between 2 and 5." << endl;
         cin >> numPlay;
     }
 
     numPlay++; //number of players including player
-    
+
     // initalize player balances
     int balances[5];
     for (int i = 0; i < 5; i++)
@@ -82,27 +89,48 @@ int main()
     // initialize dealer index outside of the loop to increment
     int dealerIndex = 0;
 
+
+    
+
+
     // * game loop
 
     bool quit = false;
     while (!quit)
     {
+        // player index (will be randomized in the loop)
+        int playerIndex;
+        // record the top card index of the deck
+        int deckTop;
+        // record the pot of the cards
+        int pot;
+        // record the present check value (minimum payment to keep playing)
+        int check;
+
+        // community cards used for the faceup cards
+        int comCards[5];
+        // 2D array to record each player's hands
+        int playHands[6][2];
+        // full deck of cards
+        int cardDeck[52];
+        // records how much each player has bet so far (to ensure equal bets at the end)
+        int bets[6];
+
         // initialize reset player hands
-        int playHands[5][5];
         for (int i = 0; i < numPlay; i++)
         {
-            for (int j = 0; j < 5; j++)
+            for (int j = 0; j < 2; j++)
             {
                 playHands[i][j] = 0;
             }
         }
 
         // shuffle deck
-        int cardDeck[52];
         for (int i = 0; i < 52; i++)
         {
             cardDeck[i] = i;
         }
+        deckTop = 0;
 
         // TODO: add seed later for random number generator
         cout << "Shuffling cards..." << endl;
@@ -111,26 +139,30 @@ int main()
 
         // TODO: add dice roll/random number later to change order
         // for now, player order remains at 0 (i.e. 0th index of array)
-        int playerIndex = 0;
+        playerIndex = 0;
 
         // dealing cards
         cout << "Dealing cards..." << endl;
-        int deckTop = 0;
-
+        
+        deckTop = deal(cardDeck, playHands, numPlay, deckTop);
         // run twice for 2 cards in each hand
-        deckTop = deal(cardDeck, playHands, numPlay, deckTop, 1);
-        deckTop = deal(cardDeck, playHands, numPlay, deckTop, 2);
         sleep(3);
 
+        for(int i = 0; i < numPlay; i++){
+            bets[i] = 0;
+        }
+        
+        pot = 0;
+        check = 10; // as default check value for now, could implement changes later
         // big and small bets
-        int pot = 0;
-        cout << "'Dealer' is Player #" << dealerIndex << ", so Players " << dealerIndex + 1 << " and " << dealerIndex + 2 << "  please bet $5 and $10, respectively." << endl;
-        balances[dealerIndex + 1] -= 5;
-        balances[dealerIndex + 2] -= 10;
-        pot += 15;
+        cout << "'Dealer' is Player #" << dealerIndex << ", so Players " << dealerIndex + 1 << " and " << dealerIndex + 2 << "  please bet $" << check/2 << " and $" << check << ", respectively." << endl;
+        balances[dealerIndex + 1] -= check/2.0;
+        bets[dealerIndex + 1] += check/2.0;
+        balances[dealerIndex + 2] -= check;
+        bets[dealerIndex + 2] += check/2.0;
+        pot += check * (3.0/2);
 
         // initalize community card array
-        int comCards[5];
         for (int i = 0; i < 5; i++)
         {
             comCards[i] = 0;
@@ -142,6 +174,34 @@ int main()
         deckTop = communityDeal(cardDeck, comCards, deckTop, 3);
         cout << "Community cards: ";
         printCards(comCards, 3);
+
+        for(int i = 0; i < numPlay - 2; i++)
+        {
+            int playNum = (dealerIndex + 2 + i) % 5;
+            char playerChoice;
+            if(playNum == playerIndex){
+                cout << "What would you like to do? Check, Raise, or Fold (c/r/f)." << endl;
+                playerChoice = 'd';
+                while(!(playerChoice == 'c' || playerChoice == 'r' || playerChoice == 'f')){
+                    cin >> playerChoice;
+                    if(playerChoice == 'c'){
+                        balances[playerIndex] -= check;
+                        pot += check;
+                    }
+                    else if(playerChoice == 'r'){
+                        cout << "How much would you like to raise?" << endl;
+                        int raise;
+                        cin >> raise;
+                        while(raise < check){
+                            cout << "You cannot raise less than $" << check << ". Please input a new raise." << endl;
+                            cin >> raise;
+                        }
+                    
+                    }
+                }
+            }
+            cout << "Player #";
+        }
 
         break;
     }

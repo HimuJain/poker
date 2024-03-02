@@ -6,8 +6,6 @@ basics of the game (*texas holdem):
 5. let the players bet/check/raise
 6. repeat 4 and 5 two more times with 1 community card each (2nd stage; turn, 3rd stage; river)
 
-required implementations:
-
 possible add ons:
 - AI?
 - difficulty level
@@ -19,3 +17,11 @@ possible add ons:
 late add ons:
 - classes/objects
 - multiplayer
+
+
+**NEW!**:
+Learned about objects/structs/classes and vectors, so will be adding features into the game to make it easier
+1. card.h for a card class
+2. deck.h for a deck class
+3. player.h or hand.h for a hand/deck class
+4. will use a player or hand vector to store multiple players/hands
