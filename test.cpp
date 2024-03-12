@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 int main(){
-    cout << "\033[1;30mThis text is red.\033[0m" << endl;
+    cout << "\033[1;31mThis text is red.\033[0m" << endl;
     cout << "\033[1;32mThis text is green.\033[0m" << endl;
     cout << "\033[1;33mThis text is yellow.\033[0m" << endl;
     cout << "\033[1;34mThis text is blue.\033[0m" << endl;
