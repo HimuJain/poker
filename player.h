@@ -9,23 +9,23 @@
 // ? how many classes should you use in one program?
 class Player{
 public:
-    // ? pass in optional arguments for AI?
     Player();
-    Player(int numCards);
+    Player(int id, std::string name, int balance, bool AI = false);
 
     // hand functions
 
     // ? if there is a valid hand, then the cards are highlighted; will the comCards print too?
     void printHand();
     // todo: should have a return value so we can compare against other players
-    void findBestHand(Player comCards);
+    double findBestHand(Player comCards);
+    // todo: use one function to add one card? or one to add 2?
     void addCard(Card dealt);
     // reset the player's hand, their bet and whether they folded or not 
     void resetPlayer();
 
     // money functions
 
-    bool checkOrFold(int betAmount, int* pot);
+    void checkBetOrFold(int* betAmount, int* pot);
 
 
 private:

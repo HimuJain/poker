@@ -11,24 +11,11 @@ void deal(int numPlayers, int numCards);
 // int deal(int deck[], int playHands[][2], int numPlay, int deckTop);
 // int communityDeal(int deck[], int communityCards[], int deckTop, int round);
 
-// ♥, ♠, ♦, ♣; each suit as a unicode character
-const char* suit[4] = {"\U00002665", "\U00002660", "\U00002666", "\U00002663"};
-// the card type for each card
-const char* type[13] = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
+// // ♥, ♠, ♦, ♣; each suit as a unicode character
+// const char* suit[4] = {"\U00002665", "\U00002660", "\U00002666", "\U00002663"};
+// // the card type for each card
+// const char* type[13] = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
 
-
-// literally just shuffling cards
-void shuffleCards(int deck[])
-{
-    // using a shuffle algorithm
-    for (int i = 52 - 1; i >= 0; i--)
-    {
-        int j = rand() % (i + 1);
-        int swap = deck[i];
-        deck[i] = deck[j];
-        deck[j] = swap;
-    }
-}
 
 // dealing for players
 int deal(int deck[], int playHands[][2], int numPlay, int deckTop)
@@ -53,13 +40,6 @@ int communityDeal(int deck[], int communityCards[], int deckTop, int round)
 }
 
 // prints out the cards in a hand
-void printCards(int hand[], int round){
-    round;
-    for(int i = 0; i < round; i++){
-        cout << type[hand[i] % 13] << suit[hand[i] / 13] << ' ';
-    }
-    cout << endl;
-}
 
 
 
@@ -68,28 +48,35 @@ int main()
 {
     // welcome messages
     cout << "Welcome to Poker!" << endl;
-    cout << "How many players would you like? (2-5)" << endl; // not including player
+    cout << "How many players would you like? (2-10)" << endl; // not including player
     int numPlay;
     cin >> numPlay;
-    while (numPlay < 2 || numPlay > 5)
+    while (numPlay < 2 || numPlay > 10)
     {
-        cout << "Please enter a number between 2 and 5." << endl;
+        cout << "Please enter a number between 2 and 10." << endl;
         cin >> numPlay;
     }
-
-    numPlay++; //number of players including player
-
-    // initalize player balances
-    int balances[5];
-    for (int i = 0; i < 5; i++)
-    {
-        balances[i] = 1000;
+    cout << "What is the default balance you would like each player to start with?" << endl;
+    int balance;
+    cin >> balance;
+    int playerIndex;
+    vector<Player> allPlayers;
+    for(int i = 1; i <= numPlay; i++){
+        cout << "What is Player " << i << "'s name ?" << endl;
+        string name;
+        cin >> name;
+        bool thisPlayer = false;
+        if(!thisPlayer){
+            cout << "Are you this player? [y/n]" << endl;
+            char response;
+            cin >> response;
+            if(response == 'y'){
+                thisPlayer = true;
+                playerIndex = i;
+            }
+        }
+        allPlayers.push_back(Player(i, name, balance));
     }
-
-    // initialize dealer index outside of the loop to increment
-    int dealerIndex = 0;
-
-
     
 
 
@@ -99,14 +86,15 @@ int main()
     while (!quit)
     {
         // player index (will be randomized in the loop)
-        int playerIndex;
+        int playerIndex; // done earlier
         // record the top card index of the deck
-        int deckTop;
+        int deckTop; // in deck class
         // record the pot of the cards
-        int pot;
+        int pot; // * com card/com pot class? necessary?
         // record the present check value (minimum payment to keep playing)
         int check;
 
+        // all of the below are uneccessary
         // community cards used for the faceup cards
         int comCards[5];
         // 2D array to record each player's hands
