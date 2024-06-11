@@ -10,5 +10,8 @@ int main(){
     cout << "\033[1;37mThis text is white.\033[0m" << endl;
     cout << "\033[1;90mThis text is grey.\033[0m" << endl;
     cout << "yay!" << endl;
+    int count = 5;
+    cin >> count;
+    cout << count << endl;
     return 0;
 }

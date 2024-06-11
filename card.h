@@ -1,3 +1,6 @@
+#ifndef CARD
+#define CARD
+
 #include <iostream>
 
 const enum Colors {BLANK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, GREY};
@@ -15,3 +18,5 @@ private:
     char* suit_;
     char* type_;
 };
+
+#endif

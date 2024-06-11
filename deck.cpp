@@ -20,9 +20,11 @@ void Deck::shuffle() {
         cards_[i] = cards_[j];
         cards_[j] = swap;
     }
+    top_ = 0; // shuffling should reset the top card
 }
 
 // used for drawing cards from the deck
-Card Deck::topCard_get() {
+Card Deck::dealTopCard() {
     return cards_[top_++];
 }
+

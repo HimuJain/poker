@@ -21,9 +21,10 @@ char* Card::suit_get() {
     return suit_;
 }
 // bool color tells you whether to print in red or not
-void Card::print(bool color = false) {
+void Card::print(bool color = false) { // TODO: replace with operator overload?
     if(color){
         std::cout << "\033[1;31m";
     }
     std::cout << type_ << suit_ << ' ' << "\033[0m";
 }
+

@@ -1,3 +1,6 @@
+#ifndef PLAYER
+#define PLAYER
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -24,8 +27,10 @@ public:
     void resetPlayer();
 
     // money functions
+    // returns true if the player has checked/called
+    bool checkBetOrFold(int* betAmount, int* pot);
 
-    void checkBetOrFold(int* betAmount, int* pot);
+    void betMoney(int betAmount, int* pot);
 
 
 private:
@@ -36,14 +41,16 @@ private:
 
     std::vector<Card> hand_;
     // rank the hands in order of superiority
-    int handRank_;
+    double handRank_;
     // amount of money player has
     int balance_;
     // amount they bet
     int bet_;
-    // whether they fold
+    // whether they fold (is this useful?)
     bool folded_;
     // whether they are an ai
     bool ai_;
     // ? inheritence for AI class?
 };
+
+#endif
