@@ -14,28 +14,34 @@ class Player{
 public:
     Player();
     Player(int id, std::string name, int balance, bool AI = false);
+    
+    virtual ~Player();
 
     // hand functions
 
     // ? if there is a valid hand, then the cards are highlighted; will the comCards print too?
     void printHand();
     // todo: should have a return value so we can compare against other players
-    double findBestHand(Player comCards);
+    double findBestHand(Player& comCards);
     // todo: use one function to add one card? or one to add 2?
     void addCard(Card dealt);
     // reset the player's hand, their bet and whether they folded or not 
     void resetPlayer();
 
+    void resetBet();
+
+    void printInfo(int iteration, int row);
+
     // money functions
     // returns true if the player has checked/called
-    bool checkBetOrFold(int* betAmount, int* pot);
+    virtual bool checkBetOrFold(int* betAmount, int* pot);
 
     void betMoney(int betAmount, int* pot);
 
 
 private:
     // acts as an id for the player
-    int idNum_;
+    int id_;
 
     std::string name_;
 
