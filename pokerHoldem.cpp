@@ -7,38 +7,6 @@
 using namespace std;
 
 
-void deal(int numPlayers, int numCards);
-// int deal(int deck[], int playHands[][2], int numPlay, int deckTop);
-// int communityDeal(int deck[], int communityCards[], int deckTop, int round);
-
-
-// dealing for players
-int deal(int deck[], int playHands[][2], int numPlay, int deckTop)
-{
-    // decrement round to use for array indicies
-    for (int i = 0; i < numPlay; i++)
-    {
-        // assign the present top 2 cards of the deck to player #i's hand
-        playHands[i][0] = deck[deckTop];
-        playHands[i][1] = deck[deckTop];
-        deckTop += 2;
-    }
-    return deckTop;
-}
-
-// dealing for community cards
-int communityDeal(int deck[], int communityCards[], int deckTop, int round)
-{
-    round--;
-    communityCards[round] = deck[deckTop];
-    return ++deckTop;
-}
-
-// prints out the cards in a hand
-
-
-
-
 int main()
 {
     // welcome messages
@@ -63,11 +31,11 @@ int main()
         allPlayers.push_back(Player(i, name, balance));
     }
     int playerIndex = -1;
-    cout << "Which Player are you? (1 - " << numPlay << ")" << endl;
-    cin >> playerIndex;
-    while(playerIndex < 1 || playerIndex > numPlay){
-        cout << "Invalid Player ID inputted. Please input an ID between 1 and " << numPlay << "." << endl;
-    }
+    // cout << "Which Player are you? (1 - " << numPlay << ")" << endl;
+    // cin >> playerIndex;
+    // while(playerIndex < 1 || playerIndex > numPlay){
+    //     cout << "Invalid Player ID inputted. Please input an ID between 1 and " << numPlay << "." << endl;
+    // }
     
 
 
@@ -112,9 +80,14 @@ int main()
         // logic to make sure all players have checked or folded
         int numDone = 0, i = ((firstPlayer + 2) % numPlay);
         while(numDone != numPlay){
-            for(int j = 0; j < 6; j++){
+            char ready = 'n';
+            while(ready != 'y'){
+                cout << "Please enter 'y' when Player " << i+1 << " is at the computer." << endl;
+                cin >> ready;
+            }   
+            for(int j = 0; j < 7; j++){
                 for(int k = 0; k < numPlay; k++){
-                    allPlayers[k].printInfo(i+1, j);
+                    allPlayers[k].printInfo(i+1, j, comCards);
                     cout << " ";
                 }
                 cout << endl;
@@ -131,9 +104,11 @@ int main()
 
 
         // deal community cards and print them
+        // * first stage: flop (3 cards)
         for(int i = 0; i < 3; i++){
             comCards.addCard(pokerDeck.dealTopCard());
         }
+
 
         for(int i = 0; i < 5; i++){
             allPlayers[i].resetBet();
@@ -142,16 +117,42 @@ int main()
         check = 0;
         numDone = 0;
         while(numDone != numPlay){
-            for(int j = 0; j < 6; j++){
+            for(int j = 0; j < 7; j++){
                 for(int k = 0; k < numPlay; k++){
-                    allPlayers[k].printInfo(i+1, j);
+                    allPlayers[k].printInfo(i+1, j, comCards);
                     cout << " ";
                 }
                 cout << endl;
             }
-            cout << "Community cards: ";
-            comCards.printHand();
-            cout << endl;
+            if(allPlayers[i].checkBetOrFold(&check, &pot)){
+                numDone++;
+            }
+            else{
+                numDone = 0;
+            }
+            i++;
+            i %= numPlay;
+        }
+
+        // * second stage: turn (1 card)
+
+        comCards.addCard(pokerDeck.dealTopCard());
+
+
+        for(int i = 0; i < 5; i++){
+            allPlayers[i].resetBet();
+        }
+
+        check = 0;
+        numDone = 0;
+        while(numDone != numPlay){
+            for(int j = 0; j < 7; j++){
+                for(int k = 0; k < numPlay; k++){
+                    allPlayers[k].printInfo(i+1, j, comCards);
+                    cout << " ";
+                }
+                cout << endl;
+            }
             if(allPlayers[i].checkBetOrFold(&check, &pot)){
                 numDone++;
             }
@@ -162,6 +163,35 @@ int main()
             i %= numPlay;
         }
         
+        // * last stage: river (1 card)
+
+
+        comCards.addCard(pokerDeck.dealTopCard());
+
+
+        for(int i = 0; i < 5; i++){
+            allPlayers[i].resetBet();
+        }
+
+        check = 0;
+        numDone = 0;
+        while(numDone != numPlay){
+            for(int j = 0; j < 7; j++){
+                for(int k = 0; k < numPlay; k++){
+                    allPlayers[k].printInfo(i+1, j, comCards);
+                    cout << " ";
+                }
+                cout << endl;
+            }
+            if(allPlayers[i].checkBetOrFold(&check, &pot)){
+                numDone++;
+            }
+            else{
+                numDone = 0;
+            }
+            i++;
+            i %= numPlay;
+        }
 
 
         break;

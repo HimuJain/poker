@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-enum Colors {BLANK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, GREY};
+// enum Colors {BLANK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, GREY};
 
 class Card {
 public:

@@ -4,8 +4,14 @@
 #include "player.h"
 using namespace std;
 Player::Player() : id_(0), name_("Doe"), handRank_(0), balance_(0), ai_(false){
+    for(int i = 0; i < 2; i++){
+        colorPrint[i] = false;
+    }
 }
 Player::Player(int id, string name, int balance, bool AI) : id_(id), name_(name), handRank_(0), balance_(balance), ai_(AI) {
+    for(int i = 0; i < 2; i++){
+        colorPrint[i] = false;
+    }
 }
 
 Player::~Player(){
@@ -24,6 +30,7 @@ void Player::printHand(){
 }
 // todo: should have a return value so we can compare against other players
 double Player::findBestHand(Player& comCards){
+    // should be run before the info gets printed (to allow for accurate colouring)
     return handRank_;
 }
 void Player::addCard(Card dealt){
@@ -42,7 +49,11 @@ void Player::resetBet(){
     bet_ = 0;
 }
 
-void Player::printInfo(int iteration, int row){
+void Player::printInfo(int iteration, int row, Player& comCards){
+    // ! take into account the fact that cards can have 3 digits instead of 2 (only the case for 10)
+
+    bool turn = (id_ == iteration);
+
     int idFind = id_;
     int idLen = 0;
     while(idFind != 0){
@@ -67,9 +78,16 @@ void Player::printInfo(int iteration, int row){
         largestLength = 9 + balLen;
     }
     balLen += 9;
-    // it's 17 because that's the length of the player cards print case: Player Cards: "" ""
-    if(19 > largestLength){
-        largestLength = 19;
+
+    int handLen = 19;
+    for(int i = 0; i < 2; i++){
+        if(hand_[i].value_get() == 10){
+            handLen += 1;
+        }
+    }
+    // it's handLen because that's the length of the player cards print case: Player Cards: "" "" (taking into account the 10 case)
+    if(handLen > largestLength){
+        largestLength = handLen;
     }
 
     int betLen = 0;
@@ -86,17 +104,28 @@ void Player::printInfo(int iteration, int row){
         largestLength = 5 + betLen;
     }
     betLen += 5;
+
+    int comCardsSize = 0;
+    if(turn && (comCards.hand_).size() > 0 && largestLength < 16 + ((comCards.hand_).size() * 3)){ // if it is their turn, take the length of comCards into account
+        largestLength = 16 + ((comCards.hand_).size() * 3);
+        comCardsSize = 16 + ((comCards.hand_).size() * 3);
+        for(int i = 0; i < 3; i++){
+            if(comCards.hand_[i].value_get() == 10){
+                largestLength += 1;
+                comCardsSize += 1;
+            }
+        }
+    }
+
     // that was all for finding the largest possible string of characters that could be printed so an adequate box size can be printed
-    bool turn = (id_ == iteration);
-    
     if(row == 0){
         for(int i = 0; i < largestLength + 4; i++){
             if(turn){
                 if(i == 0){
-                    cout << "╔";
+                    cout << "\033[1;36m╔";
                 }
                 else if(i == largestLength + 3){
-                    cout << "╗";
+                    cout << "╗\033[0m";
                 }
                 else{
                     cout << "═";
@@ -117,7 +146,7 @@ void Player::printInfo(int iteration, int row){
     }
     else if(row == 1){
         if(turn){
-            cout << "║ Player " << id_ << ": " << name_;
+            cout << "\033[1;36m║\033[0m Player " << id_ << ": " << name_;
         }
         else{
             cout << "│ Player " << id_ << ": " << name_;
@@ -126,7 +155,7 @@ void Player::printInfo(int iteration, int row){
             cout << " ";
         }
         if(turn){
-            cout << " ║";
+            cout << " \033[1;36m║\033[0m";
         }
         else{
             cout << " │";
@@ -134,38 +163,37 @@ void Player::printInfo(int iteration, int row){
     }
     else if(row == 2){
         if(turn){
-            cout << "║ Balance: " << balance_;
+            cout << "\033[1;36m║\033[0m Balance: \033[1;32m" << balance_;
         }
         else{
-            cout << "│ Balance: " << balance_;
+            cout << "│ Balance: \033[1;32m" << balance_;
         }
         for(int i = 0; i < largestLength - balLen; i++){
             cout << " ";
         }
         if(turn){
-            cout << " ║";
+            cout << "\033[0m \033[1;36m║\033[0m";
         }
         else{
-            cout << " │";
+            cout << "\033[0m │";
         }
     }
     else if(row == 3){
-        if(turn){
-            cout << "║ Player Cards: " ;
-            printHand(); 
+        if(turn && (comCards.hand_).size() > 0){
+            cout << "\033[1;36m║\033[0m Community Cards: " ;
+            comCards.printHand(); 
         }
-        else if(folded_){
-            cout << "│ Player Cards: " ;
-            printHand(); 
+        else if (turn){
+            cout << "\033[1;36m║\033[0m ";
         }
         else{
-            cout << "│ Player Cards: ?? ??";
+            cout << "│ ";
         }
-        for(int i = 0; i < largestLength - 19; i++){
+        for(int i = 0; i < largestLength - comCardsSize; i++){
             cout << " ";
         }
         if(turn){
-            cout << " ║";
+            cout << " \033[1;36m║\033[0m";
         }
         else{
             cout << " │";
@@ -173,29 +201,57 @@ void Player::printInfo(int iteration, int row){
     }
     else if(row == 4){
         if(turn){
-            cout << "║ Bet: " << bet_;
+            cout << "\033[1;36m║\033[0m Player Cards: " ;
+            printHand(); 
+            for(int i = 0; i < largestLength - handLen; i++){
+            cout << " ";
+            }
+        }
+        else if(folded_){
+            cout << "│ Player Cards: " ;
+            printHand(); 
+            for(int i = 0; i < largestLength - handLen; i++){
+            cout << " ";
+            }
         }
         else{
-            cout << "│ Bet: " << bet_;
-        }
-        for(int i = 0; i < largestLength - betLen; i++){
+            cout << "│ Player Cards: ?? ??";
+            for(int i = 0; i < largestLength - 19; i++){
             cout << " ";
+            }
         }
         if(turn){
-            cout << " ║";
+            cout << " \033[1;36m║\033[0m";
         }
         else{
             cout << " │";
         }
     }
     else if(row == 5){
+        if(turn){
+            cout << "\033[1;36m║\033[0m Bet: \033[1;34m" << bet_;
+        }
+        else{
+            cout << "│ Bet: \033[1;34m" << bet_;
+        }
+        for(int i = 0; i < largestLength - betLen; i++){
+            cout << " ";
+        }
+        if(turn){
+            cout << "\033[0m \033[1;36m║\033[0m";
+        }
+        else{
+            cout << "\033[0m │";
+        }
+    }
+    else if(row == 6){
         for(int i = 0; i < largestLength + 4; i++){
             if(turn){
                 if(i == 0){
-                    cout << "╚";
+                    cout << "\033[1;36m╚";
                 }
                 else if(i == largestLength + 3){
-                    cout << "╝";
+                    cout << "╝\033[0m";
                 }
                 else{
                     cout << "═";

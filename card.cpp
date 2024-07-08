@@ -20,13 +20,13 @@ int Card::value_get() {
 string Card::suit_get() {
     return suit_;
 }
-// bool color tells you whether to print in red or not
+// bool color tells you whether to print in ___ or not (colour to be decided)
 void Card::print(bool color) { // TODO: replace with operator overload?
     if((id_ / 13) % 2){
-        std::cout << "\033[1;31m" ;
+        std::cout << "\033[1;37m" ;
     }
     else{
-        std::cout << "\033[1;37m" ;
+        std::cout << "\033[1;31m" ;
     }
     std::cout << type_ << suit_ << "\033[0m";
 }

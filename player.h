@@ -30,7 +30,7 @@ public:
 
     void resetBet();
 
-    void printInfo(int iteration, int row);
+    void printInfo(int iteration, int row, Player& comCards);
 
     // money functions
     // returns true if the player has checked/called
@@ -47,6 +47,8 @@ private:
 
     std::vector<Card> hand_;
     // rank the hands in order of superiority
+    bool colorPrint[2];
+    // used to help print the relevant cards with a correct highlight
     double handRank_;
     // amount of money player has
     int balance_;
