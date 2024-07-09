@@ -31,6 +31,13 @@ void Player::printHand(){
 // todo: should have a return value so we can compare against other players
 double Player::findBestHand(Player& comCards){
     // should be run before the info gets printed (to allow for accurate colouring)
+    // * need to find a way to track the order/track the cards? to allow for proper colouring? (or just search through?)
+    vector<Card> allCards;
+    vector<int> cardDiff;
+    vector<int> suits;
+    allCards.insert(allCards.end(), hand_.begin(), hand_.end());
+    allCards.insert(allCards.end(), comCards.hand_.begin(), comCards.hand_.end());
+
     return handRank_;
 }
 void Player::addCard(Card dealt){

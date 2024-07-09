@@ -31,3 +31,13 @@ void Card::print(bool color) { // TODO: replace with operator overload?
     std::cout << type_ << suit_ << "\033[0m";
 }
 
+
+bool Card::operator<(Card& rhs){
+    return value_ < rhs.value_;
+}
+bool Card::operator>(Card& rhs){
+    return value_ > rhs.value_;
+}
+bool Card::operator==(Card& rhs){
+    return value_ == rhs.value;
+}

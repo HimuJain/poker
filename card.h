@@ -11,6 +11,9 @@ public:
     Card(int id);
     int value_get();
     std::string suit_get();
+    bool operator<(Card& rhs);
+    bool operator>(Card& rhs);
+    bool operator==(Card& rhs);
     void print(bool color = false);
 private:
     int id_;
